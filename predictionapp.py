@@ -1,7 +1,7 @@
 import streamlit as st
 from tensorflow.keras.applications import VGG16
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Input
 from PIL import Image
 import numpy as np
 from tensorflow.keras.optimizers import Adam
@@ -24,15 +24,14 @@ st.sidebar.info(
 
 # Define model architecture function
 def create_model():
-    vgg16_model = VGG16(include_top=False, input_shape=(224, 224, 3))
-    model = Sequential()
-    model.add(vgg16_model)
-    for layer in model.layers:
-        layer.trainable = False
-    model.add(GlobalAveragePooling2D())
-    model.add(Dense(256, activation='relu'))
-    model.add(Dense(32, activation='relu'))
-    model.add(Dense(4, activation='softmax'))
+    input_tensor = Input(shape=(224, 224, 3))
+    base_model = VGG16(include_top=False, weights=None, input_tensor=input_tensor)
+    x = base_model.output
+    x = GlobalAveragePooling2D()(x)
+    x = Dense(256, activation='relu')(x)
+    x = Dense(32, activation='relu')(x)
+    predictions = Dense(4, activation='softmax')(x)
+    model = Model(inputs=base_model.input, outputs=predictions)
     return model
 
 # Create and compile the model
@@ -93,4 +92,3 @@ st.write(
     **Disclaimer:** This app is for informational purposes only and is not intended to replace professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
     """
 )
-
