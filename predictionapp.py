@@ -1,10 +1,10 @@
 import streamlit as st
 from tensorflow.keras.applications import VGG16
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Input
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
+from tensorflow.keras.optimizers import Adam
 from PIL import Image
 import numpy as np
-from tensorflow.keras.optimizers import Adam
 
 # Sidebar with app information
 st.sidebar.title("About")
@@ -24,14 +24,16 @@ st.sidebar.info(
 
 # Define model architecture function
 def create_model():
-    input_tensor = Input(shape=(224, 224, 3))
-    base_model = VGG16(include_top=False, weights=None, input_tensor=input_tensor)
-    x = base_model.output
-    x = GlobalAveragePooling2D()(x)
-    x = Dense(256, activation='relu')(x)
-    x = Dense(32, activation='relu')(x)
-    predictions = Dense(4, activation='softmax')(x)
-    model = Model(inputs=base_model.input, outputs=predictions)
+    vgg16_model = VGG16(include_top=False, input_shape=(224, 224, 3))
+    vgg16_model.trainable = False  # Freeze the layers of VGG16
+
+    model = Sequential()
+    model.add(vgg16_model)
+    model.add(GlobalAveragePooling2D())
+    model.add(Dense(256, activation='relu'))
+    model.add(Dense(32, activation='relu'))
+    model.add(Dense(4, activation='softmax'))
+    
     return model
 
 # Create and compile the model
@@ -42,6 +44,7 @@ model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentrop
 weights_path = "model_vgg16_trained(2349spe).weights.h5" 
 try:
     model.load_weights(weights_path)
+    st.success("Model weights loaded successfully.")
 except Exception as e:
     st.error(f"Error loading weights: {e}")
 
