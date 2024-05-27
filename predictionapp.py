@@ -44,7 +44,6 @@ model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentrop
 weights_path = "finalmodel.h5" 
 try:
     model.load_weights(weights_path)
-    st.success("Model weights loaded successfully.")
 except Exception as e:
     st.error(f"Error loading weights: {e}")
 
