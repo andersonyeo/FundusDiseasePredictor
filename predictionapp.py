@@ -41,7 +41,7 @@ model = create_model()
 model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Load the weights
-weights_path = "model_vgg16_trained(2349spe).weights.h5" 
+weights_path = "finalmodel.h5" 
 try:
     model.load_weights(weights_path)
     st.success("Model weights loaded successfully.")
