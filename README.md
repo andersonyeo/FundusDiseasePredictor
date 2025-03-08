@@ -1,3 +1,4 @@
+# Opthalmic Diseases Image Classification 
 This is a opthalmic disesase predictor which was trained on VGG16 via transfer learning. This model achieved a test accuracy of 95.2%.
 
 Diseases that the model was trained on:
